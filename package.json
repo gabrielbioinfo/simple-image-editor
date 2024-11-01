@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.1.0",
+    "@heroicons/react": "^2.1.5",
     "@neondatabase/serverless": "^0.10.1",
     "@shadcn/ui": "^0.0.4",
     "aws-sdk": "^2.1691.0",
