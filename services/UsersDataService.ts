@@ -4,13 +4,17 @@ import { db } from '../db';
 
 export default class UsersDataService {
   
+  async findAll(tenantId:number){
+    return await db.select().from(users).where(eq(users.tenantId, tenantId)).execute();
+  }
+
   async createUser(tenantId:number, userData: Record<string, any> ){
     await db.insert(users).values({
       tenantId: tenantId,
       clerkId: userData.id,
       data: userData,
       guest: false
-    });
+    })
   }
 
   async updateUser(tenantId: number, userId: string, userData: Record<string, any> ){
@@ -22,10 +26,10 @@ export default class UsersDataService {
             eq(users.tenantId, tenantId)
           )
         )
-        .execute();
+        .execute()
   }
 
-  async deleteUser(tenantId: number, userId: string){
+  async deleteUserByClerkId(tenantId: number, userId: string){
     await db.delete(users)
         .where(
           and(
@@ -33,6 +37,17 @@ export default class UsersDataService {
             eq(users.tenantId, tenantId)
           )
         )
-        .execute();
+        .execute()
+  }
+
+  async deleteUserById(tenantId: number, userId: number){
+    await db.delete(users)
+        .where(
+          and(
+            eq(users.id, userId),
+            eq(users.tenantId, tenantId)
+          )
+        )
+        .execute()
   }
 }

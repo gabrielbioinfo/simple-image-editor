@@ -1,11 +1,11 @@
-import { relations } from "drizzle-orm";
-import { boolean, integer, jsonb, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm"
+import { boolean, integer, jsonb, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 
 export const tenants = pgTable('tenants', {
   id: serial("id").primaryKey(),
   name: varchar('name').unique().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow()
-});
+})
 
 export const users = pgTable('users', {
   id: serial("id").primaryKey(),
@@ -56,4 +56,10 @@ export const imagesRelations = relations(images, ({ one }) => ({
 }))
 
 
+export type TenantModel = InferSelectModel<typeof tenants>;
 
+export type UserModel = InferSelectModel<typeof users>;
+export type UserInsertModel = InferInsertModel<typeof users>;
+
+export type ImageModel = InferSelectModel<typeof images>;
+export type ImageInsertModel = InferInsertModel<typeof images>;

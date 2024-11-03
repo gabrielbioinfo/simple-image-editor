@@ -1,19 +1,14 @@
-'use client'
+import ImageListComponent from '@/components/ImageListComponent'
+import { config } from 'dotenv'
+import { Suspense } from 'react'
 
-import ImageListComponent from '@/components/ImageListComponent';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
+config({ path: ".env.local" })
 
-const HomePage = () => {
+export default async function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow container mx-auto px-4">
-        <ImageListComponent />
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default HomePage;
+    <main className="flex-grow container mx-auto px-4">
+      <h1>Image Editor</h1>
+      <Suspense fallback="loading"><ImageListComponent /></Suspense>
+    </main>
+  )
+}

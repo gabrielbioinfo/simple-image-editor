@@ -9,7 +9,7 @@ export default class ClerkService {
   private svixId: string = ''
   private svixTimestamp: string = ''
   private svixSignature: string = ''
-  private usersWebhook: Webhook;
+  private usersWebhook: Webhook
   private usersDataService = new UsersDataService()
 
   constructor(headerPayload: ReadonlyHeaders) {
@@ -80,7 +80,7 @@ export default class ClerkService {
   private async handleUserDeletedEvent(tenantId: number, { type, data }: WebhookEvent) {
     const { id: userId } = data as UserJSON
     console.log('handling user deleted', { type, userId, data });
-    await this.usersDataService.deleteUser(tenantId, userId)
+    await this.usersDataService.deleteUserByClerkId(tenantId, userId)
   }
 
   private logEventData(event: WebhookEvent, body: string) {

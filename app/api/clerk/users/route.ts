@@ -13,9 +13,6 @@ export async function POST(req: Request) {
     const headerPayload = await headers()
     const clerkService = new ClerkService(headerPayload)
     await clerkService.receiveEvent(req)
-
-    
-
     return new Response('', { status: 200 })
   } catch (err: any) {
     console.error(err)
