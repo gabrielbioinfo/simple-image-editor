@@ -1,39 +1,46 @@
-import formidable, { File } from "formidable";
-import fs from "fs";
-import { IncomingMessage } from "http";
-import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-const uploadDir = path.join(process.cwd(), "/public/uploads/temp")
-const form = formidable({
-  uploadDir,
-  keepExtensions: true,
-  multiples: false,
-});
-
-if (!fs.existsSync(uploadDir as string)) {
-  fs.mkdirSync(uploadDir as string, { recursive: true });
-}
+import { pinata } from '@/config/pinata'
+import ImagesDataService from '@/services/ImagesDataService'
+import UsersDataService from '@/services/UsersDataService'
+import { currentUser } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
   try {
-    const [_fields, files] = await form.parse(
-      req as unknown as IncomingMessage
-    );
-    if (!files.file || !files.file.length)
-      throw new Error('File not found!')
+    const user = await currentUser()
+    const url = await handleImage(req)
+    const clerkId = user?.id || process.env.DEFAULT_TENANT_1_GUEST
 
-    const file = files.file[0] as File;
-    const filePath = file.filepath.replace(process.cwd() + "/public", "");
+    const userService = new UsersDataService()
+    const userOnDB = await userService.findByClerkId(clerkId!)
 
-    return NextResponse.json({ filePath });
+    console.log({ userOnDB })
+
+    const userId = userOnDB?.id || parseInt(clerkId!)
+    const imageService = new ImagesDataService()
+    const image = await imageService.createImage({
+      tenantId: parseInt(process.env.DEFAULT_TENANT || '1'),
+      userId,
+      name: new Date().getTime().toString(),
+      url,
+      status: true
+    })
+
+    if (!image) throw new Error('Error on save image')
+
+    return NextResponse.json({ image }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ error: "Upload Error: " + error.message }, { status: 500 });
+    return NextResponse.json({ error: "Upload Error: " + error.message }, { status: 500 })
   }
+}
+
+const handleImage = async (req: NextRequest) => {
+  const data = await req.formData();
+  const file = data.get("file") as any;
+  const uploadData = await pinata.upload.file(file)
+  const url = await pinata.gateways.createSignedURL({
+    cid: uploadData.cid,
+    expires: 3600,
+  });
+
+  return url
 }

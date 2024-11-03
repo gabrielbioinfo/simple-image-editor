@@ -4,6 +4,12 @@ import { db } from '../db';
 
 export default class UsersDataService {
   
+  async findByClerkId(clerkId:string){
+    const userList = await db.select().from(users).where(eq(users.clerkId, clerkId)).execute();
+    if(!userList.length) return null
+    return userList[0]
+  }
+
   async findAll(tenantId:number){
     return await db.select().from(users).where(eq(users.tenantId, tenantId)).execute();
   }

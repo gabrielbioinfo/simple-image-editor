@@ -23,9 +23,11 @@
     "drizzle-orm": "^0.36.0",
     "formidable": "^3.5.2",
     "next": "15.0.2",
+    "pinata": "^1.7.2",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
     "react-dropzone": "^14.3.2",
+    "server-only": "^0.0.1",
     "svix": "^1.37.0",
     "uuid": "^11.0.2",
     "zustand": "^5.0.1"

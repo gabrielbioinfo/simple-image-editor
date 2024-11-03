@@ -1,5 +1,5 @@
 import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm"
-import { boolean, integer, jsonb, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, integer, jsonb, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 
 export const tenants = pgTable('tenants', {
   id: serial("id").primaryKey(),
@@ -25,9 +25,9 @@ export const images = pgTable('images', {
   userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   sourceImageId: integer('source_image_id'),
 
-  version: integer("tenant_id").default(1),
+  version: integer("version").default(1),
   name: varchar('name', { length: 32 }).notNull(),
-  url: varchar('url', { length: 255 }).notNull(),
+  url: text('url').notNull(),
   
   status: boolean('status').notNull().default(false),
   archived: boolean('archived').notNull().default(false),

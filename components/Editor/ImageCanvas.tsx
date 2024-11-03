@@ -1,5 +1,7 @@
 import { CanvasElementType, useImageStore } from "@/storages/imageStore"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import ErrorToast from "../ErrorToast"
+import ToastMessage from "../ToastMessage"
 import EditorTools from "./Tools"
 
 export interface LineCoordinates {
@@ -19,6 +21,8 @@ const MAX_SCALE = parseFloat(process.env.MAX_SCALE || '2.0')
 const MIN_SCALE = parseFloat(process.env.MIN_SCALE || '0.1')
 
 const CanvasImage = () => {
+  const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
 
   /**  image state */
   const { id, image: imageUrl, drawLineColor: lineColor, history, futureHistory,
@@ -31,7 +35,6 @@ const CanvasImage = () => {
   const [rotation, setRotation] = useState<number>(0)
   const [initialScale, setInitialScale] = useState(1)
   const [scale, setScale] = useState(1)
-
 
   /**  canvas */
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -47,7 +50,6 @@ const CanvasImage = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 })
 
   /**  canvas draw */
-  const [minimalTimeFormDrawing, setMinimalTimeFormDrawing] = useState(200)
   const [isDrawing, setIsDrawing] = useState(false)
   const [canDraw, setCanDraw] = useState(false)
   const [startDraw, setStartDraw] = useState({ x: 0, y: 0 })
@@ -466,37 +468,52 @@ const CanvasImage = () => {
 
   /** download file from the browser */
   const handleDownload = () => {
-    const canvasUrl = canvasRef.current?.toDataURL();
+    const canvasUrl = canvasRef.current?.toDataURL()
 
-    var link = document.createElement('a');
-    link.download = 'filename.png';
+    var link = document.createElement('a')
+    link.download = 'filename.png'
     link.href = canvasUrl!
-    link.click();
+    link.click()
+  }
+
+  const handleToastClose = () => {
+    setError(null)
+    setMessage(null)
   }
 
   const sendImageToServer = () => {
 
-    const canvasUrl = canvasRef.current?.toDataURL();
+    const canvasUrl = canvasRef.current?.toDataURL()
     if (!canvasUrl) {
-      console.error("Error getting the canvas image!");
-      return;
+      console.error("Error getting the canvas image!")
+      return
     }
 
     const formData = new FormData()
-    formData.append("file", canvasUrl)
+
+    var blobBin = atob(canvasUrl.split(',')[1]);
+    var array = [];
+    for (var i = 0; i < blobBin.length; i++) {
+      array.push(blobBin.charCodeAt(i));
+    }
+    var file = new Blob([new Uint8Array(array)], { type: 'image/png' });
+    formData.append("file", file)
 
     fetch("/api/images/upload", {
       method: "POST",
       body: formData,
     })
       .then((response) => {
-        if (!response.ok) throw new Error("Error uploading the image! Please try again later.");
-        return response.json();
+        if (!response.ok) throw new Error("Error uploading the image! Please try again later.")
+
+        setError(null)
+        return response.json()
       })
-      .then((data) => {
-        console.log("upload success:", data);
+      .then(({ image }) => {
+        setMessage("Image uploaded successfully! You can see your new Image in the gallery or just keep working in this canvas.")
+        console.log({ image })
       })
-      .catch((error) => console.error(error));
+      .catch((error) => setError(error.message))
   }
 
   return (
@@ -557,24 +574,9 @@ const CanvasImage = () => {
         />
       </div>
 
-      <div id="toast-bottom-right" className="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow right-5 bottom-5 dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800" role="alert">
-        <div className="text-sm font-normal">Bottom right positioning.</div>
-      </div>
-      <div id="toast-danger" className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
-        <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
-          <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
-          </svg>
-          <span className="sr-only">Error icon</span>
-        </div>
-        <div className="ms-3 text-sm font-normal">Item has been deleted.</div>
-        <button type="button" className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-danger" aria-label="Close">
-          <span className="sr-only">Close</span>
-          <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-          </svg>
-        </button>
-      </div>
+      {error && <ErrorToast error={error} closeAction={handleToastClose} />}
+      {message && <ToastMessage message={message} closeAction={handleToastClose} />}
+
     </div>
   )
 }
