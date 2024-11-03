@@ -11,6 +11,7 @@ type EditorToolsProps = {
   cropAction?: () => void,
   downloadAction?: () => void,
   isPanning?: boolean,
+  rotation?: number,
   rotateLeftAction?: () => void,
   rotateRightAction?: () => void,
   redoAction?: () => void,
@@ -31,6 +32,7 @@ const EditorTools = ({
   , cropAction
   , downloadAction
   , isPanning
+  , rotation
   , rotateLeftAction
   , rotateRightAction
   , redoAction
@@ -46,6 +48,7 @@ const EditorTools = ({
     , cropAction: () => { }
     , downloadAction: () => { }
     , isPanning: false
+    , rotation: 0
     , rotateLeftAction: () => { }
     , rotateRightAction: () => { }
     , redoAction: () => { }
@@ -56,7 +59,7 @@ const EditorTools = ({
     , zoomInAction: () => { }
     , zoomOutAction: () => { }
   }) => {
-  const { drawLineColor, setDrawLineColor, history } = useImageStore((state) => state);
+  const { drawLineColor, setDrawLineColor, history, futureHistory } = useImageStore((state) => state);
   const [localColor, setLocalColor] = useState(drawLineColor)
   const [enableChangeColor, setEnableChangeColor] = useState(true)
 
@@ -143,12 +146,13 @@ const EditorTools = ({
       resetAction()
   }
 
-  const { setImage, setLayers, setHistory } = useImageStore(state => state)
+  const { setImage, setLayers, setHistory, setFutureHistory } = useImageStore(state => state)
 
   const handleNewUpload = (event: any) => {
     setImage(null)
     setLayers([])
     setHistory([])
+    setFutureHistory([])
   }
 
   return (
@@ -179,7 +183,9 @@ const EditorTools = ({
             <path d="M12.5 20.5C17.1944 20.5 21 16.6944 21 12C21 7.30558 17.1944 3.5 12.5 3.5C7.80558 3.5 4 7.30558 4 12C4 13.5433 4.41128 14.9905 5.13022 16.238M1.5 15L5.13022 16.238M6.82531 12.3832L5.47107 16.3542L5.13022 16.238" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-
+        <div className="flex items-center">
+          {rotation !== undefined ? rotation.toFixed(1) : '-'}
+        </div>
         <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
           title="rotate right"
           onClick={handleRotateRight.bind(this)}>
@@ -281,6 +287,7 @@ const EditorTools = ({
 
         <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
           title="redo"
+          disabled={!futureHistory || futureHistory.length <= 0}
           onClick={handleRedo.bind(this)}>
           <svg className="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3" />
@@ -299,9 +306,9 @@ const EditorTools = ({
         </button>
       </div>
 
-      <div className="grow justify-end flex gap-1.5 items-left">
+      <div className="grow justify-end flex gap-1.5 items-left items-center">
         {!!isPanning && <span className="sm">pan</span>}
-        {!!canDraw && <span className="sm">draw</span>}
+        {!!canDraw && !isPanning && <span className="sm">draw</span>}
 
         <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
           title="save in the cloud"

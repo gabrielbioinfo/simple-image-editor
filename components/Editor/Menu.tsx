@@ -31,8 +31,8 @@ const EditorMenu = () => {
         <hr />
         <div className="px-3 pb-2">
           <div className="px-3 pb-2">
-            {history && history.map(hist =>
-              (<div key={`history-${hist.data.properties.id}`}>{hist.data.name}</div>)
+            {history && history.reverse().map((hist, index) =>
+              (<div key={`history-${index}`}>{hist.data.name}</div>)
             )}
           </div>
         </div>

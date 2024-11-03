@@ -11,6 +11,8 @@ export interface Line {
 export enum CanvasElementType {
   LINE = 'LINE',
   IMAGE = 'IMAGE',
+  ROTATION = 'ROTATION',
+  SCALE = 'SCALE',
 }
 
 export type CanvasElement = {
@@ -21,25 +23,21 @@ export type CanvasElement = {
   };
 }
 
-
 interface ImageStore {
   id: number | null;
   image: string | null;
   drawLineColor: string;
   history: CanvasElement[];
+  futureHistory: CanvasElement[];
   layers: CanvasElement[];
-
+  
   setId: (id: number) => void;
   setImage: (image: string | null) => void;
   setDrawLineColor: (color: string) => void;
   setLayers: (layers: CanvasElement[]) => void;
   setHistory: (history: CanvasElement[]) => void;
+  setFutureHistory: (history: CanvasElement[]) => void;
   
-  addElementToHistory: (type: CanvasElementType, properties: any) => void;
-  addElementToLayer: (type: CanvasElementType, properties: any) => void;
-
-  removeLastElementFromHistory: () => void;
-  removeLastElementFromLayer: () => void;
 }
 
 export const useImageStore = create<ImageStore>((set) => ({
@@ -49,45 +47,13 @@ export const useImageStore = create<ImageStore>((set) => ({
   reset: false,
   layers: [],
   history: [],
+  futureHistory: [],
 
   setId: (id) => set({ id }),
   setImage: (image) => set({ image }),
   setDrawLineColor: (drawLineColor) => set({ drawLineColor }),
   setLayers: (layers) => set({ layers }),
   setHistory: (history) => set({ history }),
-
-  addElementToHistory: (type, properties) => {
-    set(state => ({
-      history: [...state.history, {
-        type,
-        data: {
-          name: properties?.name || 'Unknown',
-          properties
-        }
-      }]
-    }));
-  },
-
-  addElementToLayer: (type, properties) => {
-    set(state => ({
-      layers: [...state.layers, {
-        type,
-        data: {
-          name: properties?.name || 'Unknown',
-          properties
-        }
-      }]
-    }));
-  },
-
-  removeLastElementFromHistory: () => 
-    set(state => ({
-      layers: state.history.slice(0, -1)
-    })),
-  
-  removeLastElementFromLayer: () => 
-    set(state => ({
-      layers: state.layers.slice(0, -1)
-    })),
+  setFutureHistory: (futureHistory) => set({ futureHistory }),
 
 }));

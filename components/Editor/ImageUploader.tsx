@@ -5,21 +5,6 @@ import { useImageStore } from "@/storages/imageStore";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-const sendImageToServer = (formData: FormData) => {
-  fetch("/api/images/upload", {
-    method: "POST",
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) throw new Error("Error uploading the image! Please try again later.");
-      return response.json();
-    })
-    .then((data) => {
-      console.log("upload success:", data);
-    })
-    .catch((error) => console.error(error));
-}
-
 export default function EditorImageUploader() {
   const setImage = useImageStore((state) => state.setImage);
   const [preview, setPreview] = useState<string | null>(null);
@@ -31,7 +16,6 @@ export default function EditorImageUploader() {
     const formData = new FormData();
     formData.append("file", file);
 
-    // sendImageToServer(formData);
     setImage(URL.createObjectURL(file));
 
   }, []);

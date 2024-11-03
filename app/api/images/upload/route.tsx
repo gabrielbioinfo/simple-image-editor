@@ -1,5 +1,3 @@
-// app/api/upload/route.ts
-
 import formidable, { File } from "formidable";
 import fs from "fs";
 import { IncomingMessage } from "http";
@@ -25,7 +23,6 @@ if (!fs.existsSync(uploadDir as string)) {
 
 export async function POST(req: NextRequest) {
   try {
-    
     const [_fields, files] = await form.parse(
       req as unknown as IncomingMessage
     );
