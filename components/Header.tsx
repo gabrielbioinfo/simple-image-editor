@@ -23,10 +23,6 @@ const Header = () => {
       <div className="flex flex-col gap-2 grow">
         <Link href="/" className="text-xmd font-bold">Simple Image Editor</Link>
         <hr />
-        <button className="flex items-center px-4 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none">
-          <Link onClick={handleNewUpload.bind(this)} href="/editor/0" className="text-sm font-bold" title='Upload New Image'>Upload New Image</Link>
-        </button>
-
         <EditorMenu />
       </div>
       <nav className="">

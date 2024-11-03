@@ -188,7 +188,7 @@ const EditorTools = ({
           </svg>
         </button>
 
-        <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
+        <button className="hidden flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
           title="crop"
           onClick={handleCrop.bind(this)}>
           <svg className="size-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth={1.5} stroke="currentColor">

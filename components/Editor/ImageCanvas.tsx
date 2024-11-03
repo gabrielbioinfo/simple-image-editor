@@ -18,7 +18,7 @@ export interface LineObject {
 const MAX_SCALE = parseFloat(process.env.MAX_SCALE || '2.0')
 const MIN_SCALE = parseFloat(process.env.MIN_SCALE || '0.1')
 
-export default function CanvasImage() {
+const CanvasImage = () => {
 
   /**  image state */
   const { id, image: imageUrl, drawLineColor: lineColor,
@@ -73,7 +73,7 @@ export default function CanvasImage() {
 
     const pixelRatio = window.devicePixelRatio || 1
     const containerWidth = container.clientWidth
-    const containerHeight = container.clientHeight
+    const containerHeight = container.clientHeight - 130
 
     const sameSize = prevContainerSize.current.width === containerWidth &&
       prevContainerSize.current.height === containerHeight
@@ -165,7 +165,6 @@ export default function CanvasImage() {
   /** Redraw the canvas when any important property changes */
   useEffect(() => {
     if (context && originalImage && !loading) {
-      console.log('Redesenhando o canvas com linhas:', lines.length, lines)
       redrawCanvas(originalImage, context)
     }
   }, [context, originalImage, lines, offset, scale, loading, rotation])
@@ -193,7 +192,7 @@ export default function CanvasImage() {
       src: imageUrl
     }
     addElementToHistory(CanvasElementType.IMAGE, imageElement)
-    addElementToLayer(CanvasElementType.IMAGE, imageElement)
+    // addElementToLayer(CanvasElementType.IMAGE, imageElement)
   }, [imageUrl])
 
   /** Redraw the canvas with elements and layers */
@@ -241,8 +240,6 @@ export default function CanvasImage() {
       })
       context.stroke()
     })
-
-    console.log('Canvas redesenhado com rotação:', rotation)
   }
 
 
@@ -253,7 +250,6 @@ export default function CanvasImage() {
       setIsPanning(true)
       setStartPan({ x: e.clientX, y: e.clientY })
       setInitialOffset({ ...offset })
-      console.log("Iniciando pan:", e.clientX, e.clientY)
       return
     }
 
@@ -295,9 +291,6 @@ export default function CanvasImage() {
         name: lineName,
       }
       addElementToHistory(CanvasElementType.LINE, lineElement)
-
-      console.log("Linha desenhada:", finalCoordinates)
-
     }
     setIsPanning(false)
   }
@@ -311,7 +304,6 @@ export default function CanvasImage() {
         x: initialOffset.x + dx,
         y: initialOffset.y + dy,
       })
-      console.log("Pan movendo para:", initialOffset.x + dx, initialOffset.y + dy)
       return
     }
 
@@ -357,7 +349,6 @@ export default function CanvasImage() {
 
   /** handles the reset of the canvas */
   const handleReset = () => {
-    console.log("Resetando canvas")
     if (!originalImage || !context)
       return
 
@@ -370,16 +361,12 @@ export default function CanvasImage() {
 
     setHistory([])
     setLayers([])
-
-    // setScale(1)
-    console.log("Resetando canvas")
   }
 
   /** handles the zoom in */
   const handleZoomIn = () => {
     setScale((prev) => {
       const newScale = Math.min(prev + 0.1, MAX_SCALE)
-      console.log("Zoom in:", newScale)
       return newScale
     })
   }
@@ -388,7 +375,6 @@ export default function CanvasImage() {
   const handleZoomOut = () => {
     setScale((prev) => {
       const newScale = Math.max(prev - 0.1, MIN_SCALE)
-      console.log("Zoom out:", newScale)
       return newScale
     })
   }
@@ -396,7 +382,16 @@ export default function CanvasImage() {
   /** toggles the draw mode */
   const handleToggleDraw = () => {
     setCanDraw(!canDraw)
-    console.log("Alternando modo de desenho para:", !canDraw)
+  }
+
+  /** download file from the browser */
+  const handleDownload = () => {
+    let canvasUrl = canvasRef.current?.toDataURL();
+
+    var link = document.createElement('a');
+    link.download = 'filename.png';
+    link.href = canvasUrl!
+    link.click();
   }
 
   return (
@@ -413,7 +408,7 @@ export default function CanvasImage() {
           undoAction={handleUndo}
           zoomInAction={handleZoomIn}
           zoomOutAction={handleZoomOut}
-
+          downloadAction={handleDownload.bind(this)}
         />
       </div>
       <div className="relative flex-grow">
@@ -456,3 +451,5 @@ export default function CanvasImage() {
     </div>
   )
 }
+
+export default CanvasImage
