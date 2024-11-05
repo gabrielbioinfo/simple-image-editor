@@ -1,27 +1,18 @@
 import ImageCard from '@/components/Image/ImageCard'
 import ImagesDataService from '@/services/ImagesDataService'
-import UsersDataService from '@/services/UsersDataService'
 
 const ImageListComponent = async () => {
   const userId = process.env.DEFAULT_GUEST || '1'
 
-  const userService = new UsersDataService()
-  const userAuthenticated = (await userService.findByClerkId(userId)) as any
-
   const userIdAsNumber = !Number.isNaN(parseInt(userId)) ? parseInt(userId) : 1
-  const id = userAuthenticated?.id ? userAuthenticated?.id : userIdAsNumber
-  const userName = userAuthenticated?.data?.first_name
-    ? userAuthenticated?.data?.first_name
-    : 'Guest'
+  const id = userIdAsNumber
+  const userName = 'Guest'
 
   const service = new ImagesDataService()
   const imagesList = await service.findAll(
     parseInt(process.env.DEFAULT_TENANT || '1'),
     id,
   )
-
-  console.log(imagesList)
-  console.log('----------------------')
 
   return (
     <div className="flex flex-col gap-3">
