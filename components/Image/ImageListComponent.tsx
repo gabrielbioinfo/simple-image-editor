@@ -20,6 +20,9 @@ const ImageListComponent = async () => {
     id,
   )
 
+  console.log(imagesList)
+  console.log('----------------------')
+
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-lg bold p-5 pl-0">{userName}&apos;s Galery</h3>

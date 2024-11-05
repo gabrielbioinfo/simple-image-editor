@@ -21,7 +21,7 @@ export default class ImagesDataService {
     const sequence: any = await db.execute<{ next_val: number }>(
       "SELECT nextval('images_id_seq') as next_val",
     )
-    let id = sequence && sequence.rows.length ? sequence.rows[0].next_val : null
+    const id = sequence && sequence.rows.length ? sequence.rows[0].next_val : null
 
     imageData.id = imageData.id || id
     imageData.sourceImageId = imageData.id || id
