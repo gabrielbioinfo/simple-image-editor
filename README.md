@@ -1,5 +1,9 @@
 # Welcome: This is an SIMPLE IMAGE EDITOR project!
 
+## Deployed version
+
+https://simple-image-editor-s3im.vercel.app/
+
 ## Main motivation
 
 The main motivation was to be able to create a modern application using nextjs 15, NeonDB, Piñata for uploads and manipulate images using HTML Canvas.
@@ -71,8 +75,11 @@ We can confirm the tables are created in the Neon Tables. If we look in the tena
 Now it's fun time! Let's start the server:
 
 ```bash
+npm i
 npm run dev
 ```
+
+_Note: When running any install it's important to keep im mind that Nextjs, at this date, is using a release candidate version of React, but other libraries not necessarily. To fix the issues in the install we should use --legacy-deps. In this project we already have a .npmrc with legacy-peer-deps enabled by default._
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
