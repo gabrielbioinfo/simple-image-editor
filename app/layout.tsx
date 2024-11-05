@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
 import Header from '@/components/layout/Header'
-// import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 const geistSans = localFont({
@@ -27,28 +27,28 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    // <ClerkProvider>
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-        />
-        <meta
-          name="description"
-          content="A Simple Image Editor to showcase how to create a complex application using Nextjs 15"
-        />
-        <title>Simple Image Editor</title>
-        <link rel="icon" href="/favicon.ico" />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="flex min-h-screen">
-          <Header />
-          {children}
-        </div>
-      </body>
-    </html>
-    // </ClerkProvider>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+          />
+          <meta
+            name="description"
+            content="A Simple Image Editor to showcase how to create a complex application using Nextjs 15"
+          />
+          <title>Simple Image Editor</title>
+          <link rel="icon" href="/favicon.ico" />
+        </head>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <div className="flex min-h-screen">
+            <Header />
+            {children}
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
