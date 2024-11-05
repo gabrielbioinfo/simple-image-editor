@@ -1,4 +1,4 @@
-# Welcome: This is an SIMPLE EDITOR project!
+# Welcome: This is an SIMPLE IMAGE EDITOR project!
 
 ## Main motivation
 The main motivation was to be able to create a modern application using nextjs 15, NeonDB, Piñata for uploads and manipulate images using HTML Canvas.
