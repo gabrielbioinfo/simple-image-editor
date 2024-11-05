@@ -1,8 +1,13 @@
 import UsersDataService from '@/services/UsersDataService'
 
-export async function DELETE(req: Request, { params }: { params: { id: number } }) {
+export async function DELETE(req: Request) {
   try {
-    const id = (await params).id
+    const url = new URL(req.url)
+    const id = Number(url.searchParams.get('id'))
+
+    if (isNaN(id)) {
+      throw new Error('ID inválido')
+    }
     const payload = await req.json()
     const body = JSON.stringify({ ...payload, 123: 123, id })
     console.log({ body, req, id })
