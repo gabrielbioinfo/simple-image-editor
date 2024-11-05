@@ -1,5 +1,5 @@
 import { CanvasElementType, useImageStore } from "@/storages/imageStore"
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import ErrorToast from "../util/ErrorToast"
 import Loading from "../util/Loading"
 import ToastMessage from "../util/ToastMessage"
@@ -26,7 +26,7 @@ const CanvasImage = () => {
   const [message, setMessage] = useState<string | null>(null)
 
   /**  image state */
-  const { id, image: imageUrl, drawLineColor: lineColor, history, futureHistory,
+  const { image: imageUrl, drawLineColor: lineColor, history, futureHistory,
     setHistory, setFutureHistory, setLayers } = useImageStore((state) => state)
   const [originalImage, setOriginalImage] = useState<HTMLImageElement | null>(null)
   const [isInitialLoad, setIsInitialLoad] = useState(false) // Flag para carga inicial
@@ -103,6 +103,55 @@ const CanvasImage = () => {
 
   }
 
+  /** Redraw the canvas with elements and layers */
+
+
+  const redrawCanvas = useCallback((image: HTMLImageElement, context: CanvasRenderingContext2D) => {
+    if (!context || !image) return
+
+    // Reseta as transformações
+    context.setTransform(1, 0, 0, 1, 0, 0)
+
+    // Limpa o canvas completamente
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+
+    // Aplica as transformações de pan e zoom
+    context.setTransform(scale, 0, 0, scale, offset.x, offset.y)
+
+    // Salva o contexto antes de aplicar a rotação
+    context.save()
+
+    // Calcula o centro da imagem para rotação
+    const imageCenterX = image.width / 2
+    const imageCenterY = image.height / 2
+
+    // Converte o ângulo de rotação de graus para radianos
+    const rotationRadians = (rotation * Math.PI) / 180
+
+    // Aplica a rotação
+    context.translate(imageCenterX, imageCenterY) // Move o contexto para o centro da imagem
+    context.rotate(rotationRadians) // Rotaciona o contexto
+    context.translate(-imageCenterX, -imageCenterY) // Move o contexto de volta
+
+    // Desenha a imagem no canvas na posição (0, 0)
+    context.drawImage(image, 0, 0, image.width, image.height)
+
+    // Restaura o contexto para remover a rotação
+    context.restore()
+
+    // Desenha as linhas armazenadas
+    lines.forEach((line) => {
+      context.strokeStyle = line.color
+      context.lineWidth = 2
+      context.beginPath()
+      line.lines.forEach((line) => {
+        context.moveTo(line.startX, line.startY)
+        context.lineTo(line.endX, line.endY)
+      })
+      context.stroke()
+    })
+  }, [lines, offset, rotation, scale])
+
   /** Resize the canvas when the window is resized */
   useLayoutEffect(() => {
     resizeCanvasToContainer()
@@ -166,14 +215,14 @@ const CanvasImage = () => {
         setLoading(false) // Termina o carregamento mesmo se a imagem falhar
       }
     }
-  }, [imageUrl, context, isInitialLoad])
+  }, [imageUrl, context, isInitialLoad, redrawCanvas])
 
   /** Redraw the canvas when any important property changes */
   useEffect(() => {
     if (context && originalImage && !loading) {
       redrawCanvas(originalImage, context)
     }
-  }, [context, originalImage, lines, offset, scale, loading, rotation])
+  }, [context, originalImage, lines, offset, scale, loading, rotation, redrawCanvas])
 
   /** chooses the cursor based on the current state */
   useEffect(() => {
@@ -188,52 +237,7 @@ const CanvasImage = () => {
     setCanvasCursor('cursor-default')
   }, [isPanning, canDraw])
 
-  /** Redraw the canvas with elements and layers */
-  const redrawCanvas = (image: HTMLImageElement, context: CanvasRenderingContext2D) => {
-    if (!context || !image) return
 
-    // Reseta as transformações
-    context.setTransform(1, 0, 0, 1, 0, 0)
-
-    // Limpa o canvas completamente
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height)
-
-    // Aplica as transformações de pan e zoom
-    context.setTransform(scale, 0, 0, scale, offset.x, offset.y)
-
-    // Salva o contexto antes de aplicar a rotação
-    context.save()
-
-    // Calcula o centro da imagem para rotação
-    const imageCenterX = image.width / 2
-    const imageCenterY = image.height / 2
-
-    // Converte o ângulo de rotação de graus para radianos
-    const rotationRadians = (rotation * Math.PI) / 180
-
-    // Aplica a rotação
-    context.translate(imageCenterX, imageCenterY) // Move o contexto para o centro da imagem
-    context.rotate(rotationRadians) // Rotaciona o contexto
-    context.translate(-imageCenterX, -imageCenterY) // Move o contexto de volta
-
-    // Desenha a imagem no canvas na posição (0, 0)
-    context.drawImage(image, 0, 0, image.width, image.height)
-
-    // Restaura o contexto para remover a rotação
-    context.restore()
-
-    // Desenha as linhas armazenadas
-    lines.forEach((line) => {
-      context.strokeStyle = line.color
-      context.lineWidth = 2
-      context.beginPath()
-      line.lines.forEach((line) => {
-        context.moveTo(line.startX, line.startY)
-        context.lineTo(line.endX, line.endY)
-      })
-      context.stroke()
-    })
-  }
 
   /** starts pan and draw */
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -451,7 +455,7 @@ const CanvasImage = () => {
   const handleDownload = () => {
     const canvasUrl = canvasRef.current?.toDataURL()
 
-    var link = document.createElement('a')
+    const link = document.createElement('a')
     link.download = 'filename.png'
     link.href = canvasUrl!
     link.target = '_blank'
@@ -465,8 +469,6 @@ const CanvasImage = () => {
 
   const sendImageToServer = () => {
 
-    console.log({ canvasRef, containerRef, context, current: canvasRef.current, url: canvasRef.current?.toDataURL() })
-
     setLoading(true)
     const canvasUrl = canvasRef.current?.toDataURL()
     if (!canvasUrl) {
@@ -477,12 +479,12 @@ const CanvasImage = () => {
 
     const formData = new FormData()
 
-    var blobBin = atob(canvasUrl.split(',')[1]);
-    var array = [];
-    for (var i = 0; i < blobBin.length; i++) {
+    const blobBin = atob(canvasUrl.split(',')[1]);
+    const array = [];
+    for (let i = 0; i < blobBin.length; i++) {
       array.push(blobBin.charCodeAt(i));
     }
-    var file = new Blob([new Uint8Array(array)], { type: 'image/png' });
+    const file = new Blob([new Uint8Array(array)], { type: 'image/png' });
     formData.append("file", file)
 
     fetch("/api/images/upload", {
@@ -495,7 +497,7 @@ const CanvasImage = () => {
         setError(null)
         return response.json()
       })
-      .then(({ image }) => {
+      .then(() => {
         setLoading(false)
         setMessage("Image uploaded successfully! You can see your new Image in the gallery or just keep working in this canvas.")
       })

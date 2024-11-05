@@ -6,7 +6,7 @@ import { currentUser } from '@clerk/nextjs/server';
 const ImageListComponent = async () => {
   const user = await currentUser()
 
-  let userId = user?.id || process.env.DEFAULT_GUEST || '1'
+  const userId = user?.id || process.env.DEFAULT_GUEST || '1'
 
   const userService = new UsersDataService()
   const userAuthenticated = await userService.findByClerkId(userId) as any
@@ -23,10 +23,10 @@ const ImageListComponent = async () => {
 
   return (
     <div className='flex flex-col gap-3'>
-      <h3 className='text-lg bold p-5 pl-0'>{userName}'s Galery</h3>
+      <h3 className='text-lg bold p-5 pl-0'>{userName}&apos;s Galery</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {imagesList && imagesList.map(image => (
-          <ImageCard key={`image-${image.id}`} image={image} />
+        {imagesList && imagesList.map((image, index) => (
+          <ImageCard key={`image-${image.id}`} image={image} name={`image-${index + 1}`} />
         ))}
       </div>
     </div>

@@ -25,7 +25,7 @@ const getImageFromServer = async (url: string) => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.error(`Falha ao baixar a imagem: ${response.status} ${response.statusText}`);
+      console.error(`Download error: ${response.status} ${response.statusText}`);
       return undefined;
     }
 
@@ -35,7 +35,8 @@ const getImageFromServer = async (url: string) => {
     const base64 = buffer.toString('base64');
     const dataURL = `data:${contentType};base64,${base64}`;
     return dataURL;
-  } catch (erro) {
+  } catch (err) {
+    console.error(err)
     return undefined
   }
 

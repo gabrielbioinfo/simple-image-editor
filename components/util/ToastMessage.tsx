@@ -1,6 +1,6 @@
 'use client';
 
-const ToastMessage = ({ message, closeAction }: { message: string, closeAction: Function }) => {
+const ToastMessage = ({ message, closeAction }: { message: string, closeAction: () => void }) => {
 
   const handleClose = () => {
     if (closeAction)

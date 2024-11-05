@@ -1,11 +1,10 @@
 'use client'
 import { useImageStore } from "@/storages/imageStore"
 import Link from "next/link"
-import { usePathname } from 'next/navigation'
 
 const EditorMenu = () => {
   const imageStore = useImageStore.getState()
-  const pathname = usePathname()
+  // const pathname = usePathname()
 
 
   const cleanImageStore = () => {
@@ -28,7 +27,7 @@ const EditorMenu = () => {
             onClick={cleanImageStore.bind(this)} href="/editor/0" title='Upload New Image'>Upload New Image</Link>
         </button>
       </section>
-      {pathname.includes('/editor/') &&
+      {/* {pathname.includes('/editor/') && imageStore.history &&
         <section className="flex flex-col items-left py-3 w-full">
           <div className="px-3 pb-2">
             <h3 className="text-sm font-bold">History</h3>
@@ -36,13 +35,13 @@ const EditorMenu = () => {
           <hr />
           <div className="px-3 pb-2">
             <div className="px-3 pb-2">
-              {imageStore.history && imageStore.history.reverse().map((hist, index) =>
+              {imageStore.history.reverse().map((hist, index) =>
                 (<div key={`history-${index}`}>{hist.data.name}</div>)
               )}
             </div>
           </div>
         </section>
-      }
+      } */}
     </div>
   )
 }

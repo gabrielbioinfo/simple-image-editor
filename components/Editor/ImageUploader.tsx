@@ -13,9 +13,9 @@ export default function EditorImageUploader() {
     const formData = new FormData();
     formData.append("file", file);
     setImage(URL.createObjectURL(file));
-  }, []);
+  }, [setImage]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
     multiple: false,

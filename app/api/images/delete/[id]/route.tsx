@@ -23,5 +23,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   }
 }
 
-const expires = parseInt(process.env.DEFAULT_EXPIRATING_TIME || '315576000')
 

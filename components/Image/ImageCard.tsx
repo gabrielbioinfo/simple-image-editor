@@ -3,13 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const ImageCard = ({ image }: { image: any }) => {
+const ImageCard = ({ image, name }: { image: any, name: string } = { image: null, name: 'Image' }) => {
 
   if (!image) return ''
 
   const handleDownload = () => {
-    var link = document.createElement('a')
-    link.download = `${image.name}.png`
+    const link = document.createElement('a')
+    link.download = `${name}.png`
     link.href = image.url
     link.target = '_blank'
     link.click()
@@ -30,11 +30,11 @@ const ImageCard = ({ image }: { image: any }) => {
           src={image.url}
           width={500}
           height={500}
-          alt={image.name}
+          alt={name}
         />
       </a>
       <div className="flex justify-between items-center w-full">
-        <span className="grow text-sm text-gray-900 ">{image.name}</span>
+        <span className="grow text-sm text-gray-900 ">{name}</span>
         <div className="flex gap-1">
           <Link className="max-w-max relative inline-flex items-center justify-center overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 relative p-1 px-2 transition-all ease-in duration-75 "
             href={`/editor/${image.id}`} title='create a new image from this'>

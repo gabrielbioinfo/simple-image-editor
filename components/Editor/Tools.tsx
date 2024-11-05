@@ -67,11 +67,11 @@ const EditorTools = ({
     if (!enableChangeColor) return
 
     setDrawLineColor(localColor)
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setEnableChangeColor(true)
     }, 500)
 
-  }, [localColor, enableChangeColor])
+  }, [localColor, enableChangeColor, setEnableChangeColor, setDrawLineColor])
 
 
   const handleRotateLeft = (evt: any) => {
@@ -143,15 +143,6 @@ const EditorTools = ({
     evt.preventDefault()
     if (resetAction)
       resetAction()
-  }
-
-  const { setImage, setLayers, setHistory, setFutureHistory } = useImageStore(state => state)
-
-  const handleNewUpload = (event: any) => {
-    setImage(null)
-    setLayers([])
-    setHistory([])
-    setFutureHistory([])
   }
 
   return (

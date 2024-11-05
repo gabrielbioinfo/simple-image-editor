@@ -10,7 +10,7 @@ const EditorImage = ({ id }: { id: number } = { id: 0 }) => {
 
   useEffect(() => {
     setId(id)
-  }, [id])
+  }, [id, setId])
 
   return (
     <section className="grow flex">

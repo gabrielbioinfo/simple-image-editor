@@ -1,6 +1,6 @@
 'use client';
 
-const ErrorToast = ({ error, closeAction }: { error: any, closeAction: Function }) => {
+const ErrorToast = ({ error, closeAction }: { error: any, closeAction: () => void }) => {
 
   const handleClose = () => {
     if (closeAction)
