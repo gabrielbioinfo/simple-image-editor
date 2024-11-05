@@ -5,8 +5,7 @@ export async function POST(req: Request) {
   try {
     const payload = await req.json()
     const body = JSON.stringify(payload)
-    console.log({ body, req })
-
+    
     const service = new UsersDataService()
     const user = await service.createUser(1, {
       tenantId: 1,

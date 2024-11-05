@@ -7,12 +7,12 @@ export async function POST(req: NextRequest) {
   try {
     const user = { id: process.env.DEFAULT_GUEST || '1' }
     const { url, cid, uploadData } = await handleImage(req)
-    const clerkId = user?.id || process.env.DEFAULT_GUEST
+    const id = user?.id || process.env.DEFAULT_GUEST
 
     const userService = new UsersDataService()
-    const userOnDB = await userService.findByClerkId(clerkId!)
+    const userOnDB = await userService.findById(parseInt(id!))
 
-    const userId = userOnDB?.id || parseInt(clerkId!)
+    const userId = userOnDB?.id || parseInt(id!)
     const imageService = new ImagesDataService()
     const image = await imageService.createImage({
       tenantId: parseInt(process.env.DEFAULT_TENANT || '1'),

@@ -1,11 +1,7 @@
 import UsersDataService from '@/services/UsersDataService'
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const payload = await req.json()
-    const body = JSON.stringify(payload)
-    console.log({ body, req })
-
     const service = new UsersDataService()
     const users = await service.findAll(1)
 

@@ -1,6 +1,9 @@
 import Editor from '@/components/Editor'
 import ImagesDataService from '@/services/ImagesDataService'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function EditorPage({
   params,
 }: {
@@ -14,8 +17,6 @@ export default async function EditorPage({
   let url = undefined
   if (image?.url) url = await getImageFromServer(image.url)
 
-  console.log({ url })
-
   return (
     <main className="flex flex-col flex-grow container mx-auto">
       <Editor id={imageId} imageUrl={url} />
@@ -25,7 +26,7 @@ export default async function EditorPage({
 
 const getImageFromServer = async (url: string) => {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, { cache: 'no-store', next: { revalidate: 0 } })
     if (!response.ok) {
       console.error(`Download error: ${response.status} ${response.statusText}`)
       return undefined

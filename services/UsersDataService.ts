@@ -3,6 +3,12 @@ import { and, eq } from 'drizzle-orm'
 import { db } from '../db'
 
 export default class UsersDataService {
+  async findById(id: number) {
+    const userList = await db.select().from(users).where(eq(users.id, id)).execute()
+    if (!userList.length) return null
+    return userList[0]
+  }
+
   async findByClerkId(clerkId: string) {
     const userList = await db
       .select()

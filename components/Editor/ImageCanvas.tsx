@@ -415,7 +415,6 @@ const CanvasImage = () => {
     }
 
     if (lastElement.type === CanvasElementType.SCALE) {
-      console.log({ lastElement, scale })
       setScale(lastElement.data.properties.prevScale)
     }
   }
@@ -423,16 +422,10 @@ const CanvasImage = () => {
   /** handles redo with the futureHistory */
   const handleRedo = () => {
     const [lastElement] = futureHistory.slice(-1)
-    console.log('REDOOOOOOOOOOO', { futureHistory, lastElement })
     if (!lastElement) return
 
     setFutureHistory([...futureHistory.slice(0, -1)])
     setHistory([...history, lastElement])
-
-    console.log({
-      history: [...history.slice(0, -1)],
-      future: [...futureHistory, lastElement],
-    })
 
     if (lastElement.type === CanvasElementType.LINE) {
       const finalCoordinates = lastElement.data.properties.finalCoordinates
@@ -444,7 +437,6 @@ const CanvasImage = () => {
     }
 
     if (lastElement.type === CanvasElementType.SCALE) {
-      console.log({ lastElement, scale })
       setScale(lastElement.data.properties.prevScale)
     }
   }
@@ -507,6 +499,8 @@ const CanvasImage = () => {
     fetch('/api/images/upload', {
       method: 'POST',
       body: formData,
+      cache: 'no-store',
+      next: { revalidate: 0 },
     })
       .then((response) => {
         if (!response.ok)

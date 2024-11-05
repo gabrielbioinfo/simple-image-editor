@@ -19,6 +19,8 @@ const ImageCard = (
   const handleDelete = () => {
     fetch(`/api/images/delete/${image.id}`, {
       method: 'DELETE',
+      cache: 'no-store',
+      next: { revalidate: 0 },
     }).then(() => {
       window.location.reload()
     })
