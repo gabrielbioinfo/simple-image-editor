@@ -1,12 +1,11 @@
 import { pinata } from '@/config/pinata'
 import ImagesDataService from '@/services/ImagesDataService'
 import UsersDataService from '@/services/UsersDataService'
-import { currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await currentUser()
+    const user = { id: process.env.DEFAULT_GUEST || '1' }
     const { url, cid, uploadData } = await handleImage(req)
     const clerkId = user?.id || process.env.DEFAULT_GUEST
 

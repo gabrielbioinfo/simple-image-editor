@@ -1,12 +1,9 @@
 import ImageCard from '@/components/Image/ImageCard'
 import ImagesDataService from '@/services/ImagesDataService'
 import UsersDataService from '@/services/UsersDataService'
-import { currentUser } from '@clerk/nextjs/server'
 
 const ImageListComponent = async () => {
-  const user = await currentUser()
-
-  const userId = user?.id || process.env.DEFAULT_GUEST || '1'
+  const userId = process.env.DEFAULT_GUEST || '1'
 
   const userService = new UsersDataService()
   const userAuthenticated = (await userService.findByClerkId(userId)) as any

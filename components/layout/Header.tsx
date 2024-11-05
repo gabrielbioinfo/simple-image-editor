@@ -12,10 +12,6 @@ const Header = () => (
       <hr />
       <EditorMenu />
     </div>
-    {/* <nav className="">
-        <hr />
-        {isSignedIn ? <div className='flex py-4 gap-3 items-center text-sm'><UserButton /> Welcome</div> : <SignInButton />}
-      </nav> */}
   </header>
 )
 
