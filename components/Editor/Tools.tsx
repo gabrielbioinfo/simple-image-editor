@@ -1,7 +1,6 @@
 'use client'
 
 import { useImageStore } from "@/storages/imageStore"
-import Link from "next/link"
 import { useEffect, useState } from "react"
 
 
@@ -158,22 +157,7 @@ const EditorTools = ({
   return (
     <form className="flex gap-1.5 items-left bg-gray-600 p-3 rounded-lg">
 
-      <div className="flex gap-1.5 items-left">
 
-
-        <Link className="flex items-center p-1 px-2 gap-0.5 text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-semibold rounded-lg shadow-md focus:outline-none"
-          onClick={handleNewUpload.bind(this)} href="/editor/0" title='Upload New Image'>Upload New Image</Link>
-
-        <div className="flex items-center">
-          <div>
-            <svg strokeWidth={1.5} stroke="currentColor" className="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g id="Interface / Line_L">
-                <path id="Vector" d="M12 19V5" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </g>
-            </svg>
-          </div>
-        </div>
-      </div>
       <div className="flex gap-1.5 items-left">
 
         <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
@@ -278,7 +262,7 @@ const EditorTools = ({
       <div className="flex gap-1.5 items-left">
         <button className="flex items-center p-1 px-2 text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-semibold rounded-lg shadow-md focus:outline-none"
           title="undo"
-          disabled={!history || history.length <= 1}
+          disabled={!history || history.length <= 0}
           onClick={handleUndo.bind(this)}>
           <svg className="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />

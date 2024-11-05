@@ -1,6 +1,11 @@
+'use client'
+
+import { useImageStore } from '../../storages/imageStore'
 import EditorImage from './Image'
 
-const Editor = ({ id }: { id: number } = { id: 0 }) => {
+const Editor = ({ id, imageUrl }: { id: number, imageUrl: string | undefined } = { id: 0, imageUrl: undefined }) => {
+  const setImage = useImageStore(state => state.setImage)
+  setImage(imageUrl || null)
 
   return (
     <div className="flex grow gap-1.5 items-left bg-gray-800 text-white">

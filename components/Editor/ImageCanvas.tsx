@@ -1,7 +1,8 @@
 import { CanvasElementType, useImageStore } from "@/storages/imageStore"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import ErrorToast from "../ErrorToast"
-import ToastMessage from "../ToastMessage"
+import ErrorToast from "../util/ErrorToast"
+import Loading from "../util/Loading"
+import ToastMessage from "../util/ToastMessage"
 import EditorTools from "./Tools"
 
 export interface LineCoordinates {
@@ -124,6 +125,10 @@ const CanvasImage = () => {
     if (context && imageUrl && !isInitialLoad) {
       const image = new Image()
       image.src = imageUrl
+
+      // if(imageUrl.includes('http'))
+      //   image.crossOrigin = "Anonymous"
+
       image.onload = () => {
         setOriginalImage(image)
 
@@ -182,30 +187,6 @@ const CanvasImage = () => {
     }
     setCanvasCursor('cursor-default')
   }, [isPanning, canDraw])
-
-  /** adds image to history and layer */
-  useEffect(() => {
-
-    const alreadyExists = history.find((element) => element?.data.properties.url === imageUrl)
-    if (!imageUrl || alreadyExists) return
-
-    console.log({ imageUrl, alreadyExists })
-    const imageElement = {
-      name: 'Image',
-      id: id,
-      src: imageUrl
-    }
-    setHistory([...history,
-    {
-      type: CanvasElementType.IMAGE,
-      data: {
-        name: 'Image', properties: {
-          url: imageUrl
-        }
-      }
-    }])
-
-  }, [imageUrl])
 
   /** Redraw the canvas with elements and layers */
   const redrawCanvas = (image: HTMLImageElement, context: CanvasRenderingContext2D) => {
@@ -473,6 +454,7 @@ const CanvasImage = () => {
     var link = document.createElement('a')
     link.download = 'filename.png'
     link.href = canvasUrl!
+    link.target = '_blank'
     link.click()
   }
 
@@ -483,9 +465,13 @@ const CanvasImage = () => {
 
   const sendImageToServer = () => {
 
+    console.log({ canvasRef, containerRef, context, current: canvasRef.current, url: canvasRef.current?.toDataURL() })
+
+    setLoading(true)
     const canvasUrl = canvasRef.current?.toDataURL()
     if (!canvasUrl) {
-      console.error("Error getting the canvas image!")
+      setLoading(false)
+      setMessage("Error getting the canvas image!")
       return
     }
 
@@ -510,10 +496,13 @@ const CanvasImage = () => {
         return response.json()
       })
       .then(({ image }) => {
+        setLoading(false)
         setMessage("Image uploaded successfully! You can see your new Image in the gallery or just keep working in this canvas.")
-        console.log({ image })
       })
-      .catch((error) => setError(error.message))
+      .catch((error) => {
+        setLoading(false)
+        setError(error.message)
+      })
   }
 
   return (
@@ -538,31 +527,7 @@ const CanvasImage = () => {
       </div>
       <div className="relative flex-grow">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
-            <div className="text-center">
-              <svg
-                className="animate-spin h-8 w-8 text-gray-600 mx-auto"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              <p className="mt-2 text-gray-600">Loading image...</p>
-            </div>
-          </div>
+          <Loading dark={false} />
         )}
         <canvas
           ref={canvasRef}

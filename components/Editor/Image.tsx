@@ -6,7 +6,7 @@ import ImageCanvas from "./ImageCanvas";
 import EditorImageUploader from "./ImageUploader";
 
 const EditorImage = ({ id }: { id: number } = { id: 0 }) => {
-  const { image, drawLineColor, setId } = useImageStore((state) => state);
+  const { image, setId } = useImageStore((state) => state);
 
   useEffect(() => {
     setId(id)

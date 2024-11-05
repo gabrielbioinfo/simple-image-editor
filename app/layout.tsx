@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
 
-import Header from "@/components/Header"
+import Header from "@/components/layout/Header"
 import {
   ClerkProvider
 } from '@clerk/nextjs'

@@ -8,28 +8,23 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx ./db/migrate.ts"
+    "db:migrate": "tsx ./db/migrate.ts",
+    "db:seed": "tsx ./db/seed.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.14.0",
     "@clerk/nextjs": "^6.1.0",
     "@heroicons/react": "^2.1.5",
     "@neondatabase/serverless": "^0.10.1",
-    "@shadcn/ui": "^0.0.4",
-    "@types/formidable": "^3.4.5",
-    "@types/uuid": "^10.0.0",
-    "aws-sdk": "^2.1691.0",
-    "axios": "^1.7.7",
     "drizzle-orm": "^0.36.0",
-    "formidable": "^3.5.2",
     "next": "15.0.2",
+    "node-fetch": "^3.3.2",
     "pinata": "^1.7.2",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
     "react-dropzone": "^14.3.2",
     "server-only": "^0.0.1",
     "svix": "^1.37.0",
-    "uuid": "^11.0.2",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

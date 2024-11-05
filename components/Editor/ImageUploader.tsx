@@ -2,30 +2,18 @@
 
 
 import { useImageStore } from "@/storages/imageStore";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 export default function EditorImageUploader() {
   const setImage = useImageStore((state) => state.setImage);
-  const [preview, setPreview] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
-    setPreview(URL.createObjectURL(file));
-
     const formData = new FormData();
     formData.append("file", file);
-
     setImage(URL.createObjectURL(file));
-
   }, []);
-
-
-  useCallback(() => {
-    if (!preview) return
-
-    console.log('Realmente a imagem foi carregada:', preview)
-  }, [preview])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
