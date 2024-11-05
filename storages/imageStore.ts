@@ -1,11 +1,11 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
 export interface Line {
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-  color: string;
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+  color: string
 }
 
 export enum CanvasElementType {
@@ -16,28 +16,27 @@ export enum CanvasElementType {
 }
 
 export type CanvasElement = {
-  type: CanvasElementType;
+  type: CanvasElementType
   data: {
-    name: string;
-    properties: any;
-  };
+    name: string
+    properties: any
+  }
 }
 
 interface ImageStore {
-  id: number | null;
-  image: string | null;
-  drawLineColor: string;
-  history: CanvasElement[];
-  futureHistory: CanvasElement[];
-  layers: CanvasElement[];
-  
-  setId: (id: number) => void;
-  setImage: (image: string | null) => void;
-  setDrawLineColor: (color: string) => void;
-  setLayers: (layers: CanvasElement[]) => void;
-  setHistory: (history: CanvasElement[]) => void;
-  setFutureHistory: (history: CanvasElement[]) => void;
-  
+  id: number | null
+  image: string | null
+  drawLineColor: string
+  history: CanvasElement[]
+  futureHistory: CanvasElement[]
+  layers: CanvasElement[]
+
+  setId: (id: number) => void
+  setImage: (image: string | null) => void
+  setDrawLineColor: (color: string) => void
+  setLayers: (layers: CanvasElement[]) => void
+  setHistory: (history: CanvasElement[]) => void
+  setFutureHistory: (history: CanvasElement[]) => void
 }
 
 export const useImageStore = create<ImageStore>((set) => ({
@@ -55,5 +54,4 @@ export const useImageStore = create<ImageStore>((set) => ({
   setLayers: (layers) => set({ layers }),
   setHistory: (history) => set({ history }),
   setFutureHistory: (futureHistory) => set({ futureHistory }),
-
-}));
+}))

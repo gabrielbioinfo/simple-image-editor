@@ -2,7 +2,7 @@ import { pinata } from '@/config/pinata'
 import ImagesDataService from '@/services/ImagesDataService'
 import UsersDataService from '@/services/UsersDataService'
 import { currentUser } from '@clerk/nextjs/server'
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,14 +22,14 @@ export async function POST(req: NextRequest) {
       userId,
       url,
       cid,
-      uploadData
+      uploadData,
     })
 
     if (!image) throw new Error('Error on save image')
 
     return NextResponse.json({ image }, { status: 200 })
   } catch (error: any) {
-    return NextResponse.json({ error: "Upload Error: " + error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Upload Error: ' + error.message }, { status: 500 })
   }
 }
 
@@ -37,7 +37,7 @@ const expires = parseInt(process.env.DEFAULT_EXPIRATING_TIME || '315576000')
 
 const handleImage = async (req: NextRequest) => {
   const data = await req.formData()
-  const file = data.get("file") as any
+  const file = data.get('file') as any
   const uploadData = await pinata.upload.file(file)
   const url = await pinata.gateways.createSignedURL({
     cid: uploadData.cid,

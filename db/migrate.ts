@@ -1,10 +1,10 @@
-import { migrate } from "drizzle-orm/neon-http/migrator"
-import { db } from "."
+import { migrate } from 'drizzle-orm/neon-http/migrator'
+import { db } from '.'
 
-(async () => {
+;(async () => {
   try {
     await migrate(db, {
-      migrationsFolder: 'db/migrations'
+      migrationsFolder: 'db/migrations',
     })
     console.log('Migration completed!')
   } catch (e) {

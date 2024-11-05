@@ -1,5 +1,5 @@
-import { UserModel } from "@/db/schema";
-import UsersDataService from "@/services/UsersDataService";
+import { UserModel } from '@/db/schema'
+import UsersDataService from '@/services/UsersDataService'
 
 export async function POST(req: Request) {
   try {
@@ -22,4 +22,3 @@ export async function POST(req: Request) {
     })
   }
 }
-

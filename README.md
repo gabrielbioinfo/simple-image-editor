@@ -1,21 +1,26 @@
 # Welcome: This is an SIMPLE IMAGE EDITOR project!
 
 ## Main motivation
+
 The main motivation was to be able to create a modern application using nextjs 15, NeonDB, Piñata for uploads and manipulate images using HTML Canvas.
 
 ## Main features
 
 This first version comes with:
+
 ### 1 - View Galery
+
 This page is the galery for the current user. On it we can see all the Images saved in the cloud, and download, and delete, and even start a new Image editor using this image as base.
 
 ![Image Galery](doc/galery.png)
 
 ### 2 - Image Editor
+
 This page is the editor itself. All begins with an upload of a Image.
 ![Image Uploader](doc/upload.png)
 
 Once we have the image in the canvas we can use many tools to manipulate the viewport, like:
+
 - Image Rotation: this tool will rotate only de image by 90º for both orientation.
 - Drawing Pencil: this tool allows the user to choose a color and paint on top of the image.
 - Zoom: this tool will change the size of all objects in the image creator.
@@ -30,7 +35,6 @@ Once we have the image in the canvas we can use many tools to manipulate the vie
 - [Neon - DB](https://neon.tech/)
 - [Pinata](https://pinata.cloud/)
 - [Zustang](https://github.com/pmndrs/zustand)
-
 
 ## Getting Started
 
@@ -52,10 +56,10 @@ On Piñata we have to create a workspace create a API Key and a Gateway.
 
 When creating the API key we can choose Admin and Generate. The next page will have all the keys we need to put in the .env.local.
 
-
 # Running the project
 
 First, we have to create the DB, migrate it and seed it:
+
 ```bash
 npm run db:generate
 npm run db:migrate
@@ -72,10 +76,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
 # Next Steps
 
 - Deploy on Vercel
 - Enable Clerk for Authentication, Authorization and User creation. To be able to create user you have to configure a service to help you with the webhook. I've been using ngrok.
-
-

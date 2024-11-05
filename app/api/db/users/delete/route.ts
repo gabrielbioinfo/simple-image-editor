@@ -1,10 +1,10 @@
-import UsersDataService from "@/services/UsersDataService";
+import UsersDataService from '@/services/UsersDataService'
 
-export async function DELETE(req: Request, { params }: { params: { id: number }}) {
+export async function DELETE(req: Request, { params }: { params: { id: number } }) {
   try {
-    const id = (await params).id;
+    const id = (await params).id
     const payload = await req.json()
-    const body = JSON.stringify({...payload, 123: 123, id})
+    const body = JSON.stringify({ ...payload, 123: 123, id })
     console.log({ body, req, id })
 
     const service = new UsersDataService()

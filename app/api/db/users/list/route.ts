@@ -1,4 +1,4 @@
-import UsersDataService from "@/services/UsersDataService";
+import UsersDataService from '@/services/UsersDataService'
 
 export async function GET(req: Request) {
   try {

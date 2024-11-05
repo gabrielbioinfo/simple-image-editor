@@ -1,9 +1,9 @@
-import { CanvasElementType, useImageStore } from "@/storages/imageStore"
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
-import ErrorToast from "../util/ErrorToast"
-import Loading from "../util/Loading"
-import ToastMessage from "../util/ToastMessage"
-import EditorTools from "./Tools"
+import { CanvasElementType, useImageStore } from '@/storages/imageStore'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import ErrorToast from '../util/ErrorToast'
+import Loading from '../util/Loading'
+import ToastMessage from '../util/ToastMessage'
+import EditorTools from './Tools'
 
 export interface LineCoordinates {
   startX: number
@@ -26,8 +26,15 @@ const CanvasImage = () => {
   const [message, setMessage] = useState<string | null>(null)
 
   /**  image state */
-  const { image: imageUrl, drawLineColor: lineColor, history, futureHistory,
-    setHistory, setFutureHistory, setLayers } = useImageStore((state) => state)
+  const {
+    image: imageUrl,
+    drawLineColor: lineColor,
+    history,
+    futureHistory,
+    setHistory,
+    setFutureHistory,
+    setLayers,
+  } = useImageStore((state) => state)
   const [originalImage, setOriginalImage] = useState<HTMLImageElement | null>(null)
   const [isInitialLoad, setIsInitialLoad] = useState(false) // Flag para carga inicial
   const [loading, setLoading] = useState(true) // Estado de carregamento
@@ -41,7 +48,10 @@ const CanvasImage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null)
-  const prevContainerSize = useRef<{ width: number; height: number }>({ width: 0, height: 0 })
+  const prevContainerSize = useRef<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  })
 
   /**  canvas pan */
   const [isPanning, setIsPanning] = useState(false)
@@ -63,13 +73,13 @@ const CanvasImage = () => {
     const container = containerRef.current
 
     if (!canvas || !container) {
-      console.warn("Canvas or container not available.")
+      console.warn('Canvas or container not available.')
       return
     }
 
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext('2d')
     if (!ctx) {
-      console.warn("Context not found!")
+      console.warn('Context not found!')
       return
     }
 
@@ -77,13 +87,14 @@ const CanvasImage = () => {
     const containerWidth = container.clientWidth
     const containerHeight = container.clientHeight - 130
 
-    const sameSize = prevContainerSize.current.width === containerWidth &&
+    const sameSize =
+      prevContainerSize.current.width === containerWidth &&
       prevContainerSize.current.height === containerHeight
     if (sameSize) return
 
     const containerHaveNoSize = containerWidth === 0 || containerHeight === 0
     if (containerHaveNoSize) {
-      console.warn("The container is missing width or heigth.")
+      console.warn('The container is missing width or heigth.')
       return
     }
 
@@ -100,57 +111,58 @@ const CanvasImage = () => {
     ctx.scale(pixelRatio, pixelRatio)
 
     setContext(ctx)
-
   }
 
   /** Redraw the canvas with elements and layers */
 
+  const redrawCanvas = useCallback(
+    (image: HTMLImageElement, context: CanvasRenderingContext2D) => {
+      if (!context || !image) return
 
-  const redrawCanvas = useCallback((image: HTMLImageElement, context: CanvasRenderingContext2D) => {
-    if (!context || !image) return
+      // Reseta as transformações
+      context.setTransform(1, 0, 0, 1, 0, 0)
 
-    // Reseta as transformações
-    context.setTransform(1, 0, 0, 1, 0, 0)
+      // Limpa o canvas completamente
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
-    // Limpa o canvas completamente
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+      // Aplica as transformações de pan e zoom
+      context.setTransform(scale, 0, 0, scale, offset.x, offset.y)
 
-    // Aplica as transformações de pan e zoom
-    context.setTransform(scale, 0, 0, scale, offset.x, offset.y)
+      // Salva o contexto antes de aplicar a rotação
+      context.save()
 
-    // Salva o contexto antes de aplicar a rotação
-    context.save()
+      // Calcula o centro da imagem para rotação
+      const imageCenterX = image.width / 2
+      const imageCenterY = image.height / 2
 
-    // Calcula o centro da imagem para rotação
-    const imageCenterX = image.width / 2
-    const imageCenterY = image.height / 2
+      // Converte o ângulo de rotação de graus para radianos
+      const rotationRadians = (rotation * Math.PI) / 180
 
-    // Converte o ângulo de rotação de graus para radianos
-    const rotationRadians = (rotation * Math.PI) / 180
+      // Aplica a rotação
+      context.translate(imageCenterX, imageCenterY) // Move o contexto para o centro da imagem
+      context.rotate(rotationRadians) // Rotaciona o contexto
+      context.translate(-imageCenterX, -imageCenterY) // Move o contexto de volta
 
-    // Aplica a rotação
-    context.translate(imageCenterX, imageCenterY) // Move o contexto para o centro da imagem
-    context.rotate(rotationRadians) // Rotaciona o contexto
-    context.translate(-imageCenterX, -imageCenterY) // Move o contexto de volta
+      // Desenha a imagem no canvas na posição (0, 0)
+      context.drawImage(image, 0, 0, image.width, image.height)
 
-    // Desenha a imagem no canvas na posição (0, 0)
-    context.drawImage(image, 0, 0, image.width, image.height)
+      // Restaura o contexto para remover a rotação
+      context.restore()
 
-    // Restaura o contexto para remover a rotação
-    context.restore()
-
-    // Desenha as linhas armazenadas
-    lines.forEach((line) => {
-      context.strokeStyle = line.color
-      context.lineWidth = 2
-      context.beginPath()
-      line.lines.forEach((line) => {
-        context.moveTo(line.startX, line.startY)
-        context.lineTo(line.endX, line.endY)
+      // Desenha as linhas armazenadas
+      lines.forEach((line) => {
+        context.strokeStyle = line.color
+        context.lineWidth = 2
+        context.beginPath()
+        line.lines.forEach((line) => {
+          context.moveTo(line.startX, line.startY)
+          context.lineTo(line.endX, line.endY)
+        })
+        context.stroke()
       })
-      context.stroke()
-    })
-  }, [lines, offset, rotation, scale])
+    },
+    [lines, offset, rotation, scale],
+  )
 
   /** Resize the canvas when the window is resized */
   useLayoutEffect(() => {
@@ -162,9 +174,9 @@ const CanvasImage = () => {
       resizeObserver.observe(containerRef.current)
     }
 
-    window.addEventListener("resize", resizeCanvasToContainer)
+    window.addEventListener('resize', resizeCanvasToContainer)
     return () => {
-      window.removeEventListener("resize", resizeCanvasToContainer)
+      window.removeEventListener('resize', resizeCanvasToContainer)
       resizeObserver.disconnect()
     }
   }, [])
@@ -211,7 +223,7 @@ const CanvasImage = () => {
         redrawCanvas(image, context)
       }
       image.onerror = () => {
-        console.error("Falha ao carregar a imagem:", imageUrl)
+        console.error('Falha ao carregar a imagem:', imageUrl)
         setLoading(false) // Termina o carregamento mesmo se a imagem falhar
       }
     }
@@ -237,11 +249,10 @@ const CanvasImage = () => {
     setCanvasCursor('cursor-default')
   }, [isPanning, canDraw])
 
-
-
   /** starts pan and draw */
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (e.button === 1) { // Botão do meio para pan
+    if (e.button === 1) {
+      // Botão do meio para pan
       e.preventDefault()
       setIsPanning(true)
       setStartPan({ x: e.clientX, y: e.clientY })
@@ -250,7 +261,8 @@ const CanvasImage = () => {
     }
 
     const rect = canvasRef.current?.getBoundingClientRect()
-    if (e.button === 0 && canDraw && rect && context) { // Botão esquerdo para desenhar
+    if (e.button === 0 && canDraw && rect && context) {
+      // Botão esquerdo para desenhar
       setIsDrawing(true)
       const x = (e.clientX - rect.left) / scale - offset.x / scale
       const y = (e.clientY - rect.top) / scale - offset.y / scale
@@ -275,22 +287,25 @@ const CanvasImage = () => {
           startX: startDraw.x,
           startY: startDraw.y,
           endX: x,
-          endY: y
-        }]
+          endY: y,
+        },
+      ]
 
       setLines([...lines, { color: lineColor, lines: finalCoordinates } as LineObject])
       setLineCoordinates([])
 
-      setHistory([...history,
-      {
-        type: CanvasElementType.LINE,
-        data: {
-          name: lineName,
-          properties: {
-            finalCoordinates
-          }
-        }
-      }])
+      setHistory([
+        ...history,
+        {
+          type: CanvasElementType.LINE,
+          data: {
+            name: lineName,
+            properties: {
+              finalCoordinates,
+            },
+          },
+        },
+      ])
     }
     setIsPanning(false)
   }
@@ -324,14 +339,13 @@ const CanvasImage = () => {
       setStartDraw({ x, y })
       setLineCoordinates([
         ...lineCoordinates,
-        { startX: startDraw.x, startY: startDraw.y, endX: x, endY: y }
+        { startX: startDraw.x, startY: startDraw.y, endX: x, endY: y },
       ])
     }
   }
 
   /** handles rotation for the selected layer */
   const handleRotate = (direction: number) => {
-
     setRotation((prevRotation) => {
       let newRotation = prevRotation
       if (direction === 0) newRotation = prevRotation - 90
@@ -339,23 +353,25 @@ const CanvasImage = () => {
 
       if (newRotation === 360 || newRotation === -360) newRotation = 0
 
-      setHistory([...history, {
-        type: CanvasElementType.ROTATION,
-        data: {
-          name: `Rot ${direction === 0 ? 'left' : 'right'}`,
-          properties: {
-            rotation: newRotation,
-            prevRotation
-          }
-        }
-      }])
+      setHistory([
+        ...history,
+        {
+          type: CanvasElementType.ROTATION,
+          data: {
+            name: `Rot ${direction === 0 ? 'left' : 'right'}`,
+            properties: {
+              rotation: newRotation,
+              prevRotation,
+            },
+          },
+        },
+      ])
       return newRotation
     })
   }
 
   /** handles zoom for canvas */
   const handleZoom = (direction: number = 1) => {
-
     setScale((prevScale) => {
       let newScale = prevScale
       if (direction === 0) newScale = Math.max(prevScale - 0.1, MIN_SCALE)
@@ -367,16 +383,19 @@ const CanvasImage = () => {
     if (direction === 0) newScale = Math.max(scale - 0.1, MIN_SCALE)
     if (direction === 1) newScale = Math.min(scale + 0.1, MAX_SCALE)
 
-    setHistory([...history, {
-      type: CanvasElementType.SCALE,
-      data: {
-        name: `Zoom ${direction === 0 ? 'out' : 'in'}`,
-        properties: {
-          scale: newScale,
-          prevScale: scale
-        }
-      }
-    }])
+    setHistory([
+      ...history,
+      {
+        type: CanvasElementType.SCALE,
+        data: {
+          name: `Zoom ${direction === 0 ? 'out' : 'in'}`,
+          properties: {
+            scale: newScale,
+            prevScale: scale,
+          },
+        },
+      },
+    ])
   }
 
   /** handles undo with the history */
@@ -386,8 +405,6 @@ const CanvasImage = () => {
 
     setHistory([...history.slice(0, -1)])
     setFutureHistory([...futureHistory, lastElement])
-
-
 
     if (lastElement.type === CanvasElementType.LINE) {
       setLines((prevLines) => prevLines.slice(0, -1))
@@ -412,7 +429,10 @@ const CanvasImage = () => {
     setFutureHistory([...futureHistory.slice(0, -1)])
     setHistory([...history, lastElement])
 
-    console.log({ history: [...history.slice(0, -1)], future: [...futureHistory, lastElement] })
+    console.log({
+      history: [...history.slice(0, -1)],
+      future: [...futureHistory, lastElement],
+    })
 
     if (lastElement.type === CanvasElementType.LINE) {
       const finalCoordinates = lastElement.data.properties.finalCoordinates
@@ -431,8 +451,7 @@ const CanvasImage = () => {
 
   /** handles the reset of the canvas */
   const handleReset = () => {
-    if (!originalImage || !context)
-      return
+    if (!originalImage || !context) return
 
     context?.reset()
     setLines([])
@@ -444,7 +463,6 @@ const CanvasImage = () => {
     setHistory([])
     setLayers([])
   }
-
 
   /** toggles the draw mode */
   const handleToggleDraw = () => {
@@ -468,38 +486,40 @@ const CanvasImage = () => {
   }
 
   const sendImageToServer = () => {
-
     setLoading(true)
     const canvasUrl = canvasRef.current?.toDataURL()
     if (!canvasUrl) {
       setLoading(false)
-      setMessage("Error getting the canvas image!")
+      setMessage('Error getting the canvas image!')
       return
     }
 
     const formData = new FormData()
 
-    const blobBin = atob(canvasUrl.split(',')[1]);
-    const array = [];
+    const blobBin = atob(canvasUrl.split(',')[1])
+    const array = []
     for (let i = 0; i < blobBin.length; i++) {
-      array.push(blobBin.charCodeAt(i));
+      array.push(blobBin.charCodeAt(i))
     }
-    const file = new Blob([new Uint8Array(array)], { type: 'image/png' });
-    formData.append("file", file)
+    const file = new Blob([new Uint8Array(array)], { type: 'image/png' })
+    formData.append('file', file)
 
-    fetch("/api/images/upload", {
-      method: "POST",
+    fetch('/api/images/upload', {
+      method: 'POST',
       body: formData,
     })
       .then((response) => {
-        if (!response.ok) throw new Error("Error uploading the image! Please try again later.")
+        if (!response.ok)
+          throw new Error('Error uploading the image! Please try again later.')
 
         setError(null)
         return response.json()
       })
       .then(() => {
         setLoading(false)
-        setMessage("Image uploaded successfully! You can see your new Image in the gallery or just keep working in this canvas.")
+        setMessage(
+          'Image uploaded successfully! You can see your new Image in the gallery or just keep working in this canvas.',
+        )
       })
       .catch((error) => {
         setLoading(false)
@@ -508,7 +528,10 @@ const CanvasImage = () => {
   }
 
   return (
-    <div ref={containerRef} className="grow flex flex-col h-screen w-full overflow-hidden">
+    <div
+      ref={containerRef}
+      className="grow flex flex-col h-screen w-full overflow-hidden"
+    >
       <div className="w-full pb-3">
         <EditorTools
           canDraw={canDraw}
@@ -528,9 +551,7 @@ const CanvasImage = () => {
         />
       </div>
       <div className="relative flex-grow">
-        {loading && (
-          <Loading dark={false} />
-        )}
+        {loading && <Loading dark={false} />}
         <canvas
           ref={canvasRef}
           onMouseDown={handleMouseDown}
@@ -543,7 +564,6 @@ const CanvasImage = () => {
 
       {error && <ErrorToast error={error} closeAction={handleToastClose} />}
       {message && <ToastMessage message={message} closeAction={handleToastClose} />}
-
     </div>
   )
 }
